@@ -1,8 +1,4 @@
-use std::{
-    fs,
-    thread,
-    time::{Duration},
-};
+use std::{fs, thread, time::Duration};
 
 use log::{info, warn};
 
@@ -38,17 +34,13 @@ fn apply_sus_paths(config: &Data) -> bool {
         if sus_path.trim().is_empty() {
             continue;
         }
-        if !apply_sus_path_entry(&api::SusPathType::Normal, "sus_path", sus_path) {
-            success = false;
-        }
+        success |= apply_sus_path_entry(&api::SusPathType::Normal, "sus_path", sus_path);
     }
     for sus_path_loop in &config.sus_path.sus_path_loop {
         if sus_path_loop.trim().is_empty() {
             continue;
         }
-        if !apply_sus_path_entry(&api::SusPathType::Loop, "sus_path_loop", sus_path_loop) {
-            success = false;
-        }
+        success |= apply_sus_path_entry(&api::SusPathType::Loop, "sus_path_loop", sus_path_loop);
     }
 
     success
@@ -126,19 +118,11 @@ pub fn on_post_mount() {
 }
 
 fn apply_config(config: &Data) -> bool {
-    let mut success = true;
-    if !apply_sus_paths(config) {
-        success = false;
-    }
-    if !apply_sus_maps(config) {
-        success = false;
-    }
-    if !apply_sus_kstat_additions(config) {
-        success = false;
-    }
-    if !apply_kstat_updates(config) {
-        success = false;
-    }
+    let mut success = false;
+    success |= apply_sus_paths(config);
+    success |= apply_sus_maps(config);
+    success |= apply_sus_kstat_additions(config);
+    success |= apply_kstat_updates(config);
 
     success
 }
