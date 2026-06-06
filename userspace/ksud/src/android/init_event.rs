@@ -6,8 +6,6 @@ use log::{info, warn};
 use prop_rs_android::{resetprop::ResetProp, sys_prop};
 use rustix::process::chdir;
 
-#[cfg(all(target_arch = "aarch64", target_os = "android"))]
-use crate::android::kpm;
 use crate::{
     android::{
         dynamic_manager, ksucalls,
@@ -105,11 +103,6 @@ pub fn on_post_data_fs() -> Result<()> {
 
     // Load susfs config entries that must capture metadata before mounts/overlays.
     crate::android::susfs::init_event::on_post_fs_data();
-
-    #[cfg(all(target_arch = "aarch64", target_os = "android"))]
-    if let Err(e) = kpm::booted_load() {
-        warn!("KPM: Failed to start KPM watcher: {e}");
-    }
 
     // execute metamodule post-fs-data script first (priority)
     if let Err(e) = metamodule::exec_stage_script("post-fs-data", true) {
