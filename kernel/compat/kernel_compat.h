@@ -31,6 +31,16 @@
 #endif
 
 /*
+* For Huawei Mediatek EMUI10+ (MTK platform)
+*/
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)) && \
+    (LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0))
+#if defined(KSU_COMPAT_IS_MTK_HM2)
+#define KSU_COMPAT_IS_MTK_HM2 1
+#endif
+#endif
+
+/*
 * Leagcy Huawei Hisi Devices info End
 */
 
