@@ -216,6 +216,8 @@ $(info -- $(REPO_NAME)/compat: android spec POLICYDB_CONFIG_ANDROID_NETLINK_GETN
 ccflags-y += -DKSU_COMPAT_HAS_POLICYDB_CONFIG_ANDROID_NETLINK_GETNEIGH
 endif
 
+# Modern selinux policydb check
+# The flag <KSU_COMPAT_HAS_MODERN_POLICYDB> will be added if flex_array isn't found in policydb.h
 ifneq ($(shell grep -q "flex_array" $(srctree)/security/selinux/ss/policydb.h; echo $$?),0)
 $(info -- $(REPO_NAME)/compat: found modern selinux policydb)
 ccflags-y += -DKSU_COMPAT_HAS_MODERN_POLICYDB

@@ -710,7 +710,8 @@ static bool add_type(struct policydb *db, const char *type_name, bool attr)
         return false;
     }
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) || defined(KSU_COMPAT_HAS_MODERN_POLICYDB)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) || defined(KSU_COMPAT_HAS_MODERN_POLICYDB)) && \
+    !defined(KSU_COMPAT_IS_MTK_LEGACY_HM2)
     struct ebitmap *new_type_attr_map_array =
         ksu_kvrealloc(db->type_attr_map_array, value * sizeof(struct ebitmap), (value - 1) * sizeof(struct ebitmap));
 
@@ -796,7 +797,7 @@ static bool add_type(struct policydb *db, const char *type_name, bool attr)
 
     return true;
 
-#elif defined(KSU_COMPAT_IS_MTK_HM2)
+#elif defined(KSU_COMPAT_IS_MTK_LEGACY_HM2)
     /*
      * Huawei Mediatek platform (MT6853 etc.)
      * Uses type_attr_map (ebitmap *) instead of flex_array
@@ -966,7 +967,8 @@ static bool set_type_state(struct policydb *db, const char *type_name, bool perm
 
 static void add_typeattribute_raw(struct policydb *db, struct type_datum *type, struct type_datum *attr)
 {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) || defined(KSU_COMPAT_HAS_MODERN_POLICYDB)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) || defined(KSU_COMPAT_HAS_MODERN_POLICYDB)) && \
+    !defined(KSU_COMPAT_IS_MTK_LEGACY_HM2)
     struct ebitmap *sattr = &db->type_attr_map_array[type->value - 1];
 
 #elif defined(KSU_COMPAT_IS_HISI_LEGACY_HM2)
@@ -978,9 +980,9 @@ static void add_typeattribute_raw(struct policydb *db, struct type_datum *type, 
     *  HISI_SELINUX_EBITMAP_RO is Huawei's unique features.
     */
     struct ebitmap *sattr = &db->type_attr_map[type->value - 1], HISI_SELINUX_EBITMAP_RO;
-#elif defined(KSU_COMPAT_IS_MTK_HM2)
+#elif defined(KSU_COMPAT_IS_MTK_LEGACY_HM2)
     /* Huawei Mediatek platform: use type_attr_map (ebitmap *) */
-    struct ebitmap *sattr = flex_array_get(db->type_attr_map_array, type->value - 1);
+    struct ebitmap *sattr = &db->type_attr_map[type->value - 1];
 #else
     struct ebitmap *sattr = flex_array_get(db->type_attr_map_array, type->value - 1);
 #endif
