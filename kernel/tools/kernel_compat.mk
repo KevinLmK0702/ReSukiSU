@@ -100,10 +100,10 @@ $(info -- $(REPO_NAME): CONFIG_HKIP_SELINUX_PROT found!)
 ccflags-y += -DKSU_COMPAT_IS_HISI_HM2
 endif
 
-# For Huawei Mediatek platform 
+# For Huawei Mediatek platform
 ifeq ($(CONFIG_MTK_SMI)$(CONFIG_HUAWEI_KERNEL),yy)
-  $(info -- $(REPO_NAME): Huawei Mediatek platform detected)
-  ccflags-y += -DKSU_COMPAT_IS_MTK_HM2
+$(info -- $(REPO_NAME): Huawei Mediatek platform detected)
+ccflags-y += -DKSU_COMPAT_IS_MTK_HM2
 endif
 
 # policy mutex

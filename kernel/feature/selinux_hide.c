@@ -121,7 +121,11 @@ static int constraint_expr_eval(struct context *scontext, struct context *tconte
 static void type_attribute_bounds_av(struct context *scontext, struct context *tcontext, u16 tclass,
                                      struct av_decision *avd);
 static void avd_init(struct av_decision *avd);
+
+#ifndef KSU_COMPAT_HAS_CURRENT_SID
 static inline u32 current_sid(void);
+#endif 
+
 static int string_to_context_struct(struct policydb *pol, struct sidtab *sidtabp, char *scontext, u32 scontext_len,
                                     struct context *ctx, u32 def_sid);
 static int ksu_security_context_to_sid(const char *scontext, u32 scontext_len, u32 *sid, gfp_t gfp_flags);
@@ -1717,13 +1721,21 @@ static void type_attribute_bounds_av(struct context *scontext, struct context *t
     struct type_datum *target;
     u32 masked = 0;
 
+#ifdef KSU_COMPAT_IS_MTK_LEGACY_HM2
+    source = backup_policydb->type_val_to_struct[scontext->type - 1];
+#else
     source = flex_array_get_ptr(backup_policydb->type_val_to_struct_array, scontext->type - 1);
+#endif
     BUG_ON(!source);
 
     if (!source->bounds)
         return;
 
+#ifdef KSU_COMPAT_IS_MTK_LEGACY_HM2
+    target = backup_policydb->type_val_to_struct[tcontext->type - 1];
+#else
     target = flex_array_get_ptr(backup_policydb->type_val_to_struct_array, tcontext->type - 1);
+#endif
     BUG_ON(!target);
 
     memset(&lo_avd, 0, sizeof(lo_avd));
@@ -1770,12 +1782,14 @@ static void avd_init(struct av_decision *avd)
 /*
  * get the subjective security ID of the current task
  */
+#ifndef KSU_COMPAT_HAS_CURRENT_SID
 static inline u32 current_sid(void)
 {
     const struct task_security_struct *tsec = current_security();
 
     return tsec->sid;
 }
+#endif
 
 /*
  * Compute access vectors and extended permissions based on a context
@@ -1815,10 +1829,17 @@ static void context_struct_compute_av(struct context *scontext, struct context *
 	 */
     avkey.target_class = tclass;
     avkey.specified = AVTAB_AV | AVTAB_XPERMS;
+
+#ifdef KSU_COMPAT_IS_MTK_LEGACY_HM2
+    sattr = &backup_policydb->type_attr_map[scontext->type - 1];
+    tattr = &backup_policydb->type_attr_map[tcontext->type - 1];
+#else
     sattr = flex_array_get(backup_policydb->type_attr_map_array, scontext->type - 1);
-    BUG_ON(!sattr);
     tattr = flex_array_get(backup_policydb->type_attr_map_array, tcontext->type - 1);
+#endif
+    BUG_ON(!sattr);
     BUG_ON(!tattr);
+
     ebitmap_for_each_positive_bit(sattr, snode, i)
     {
         ebitmap_for_each_positive_bit(tattr, tnode, j)

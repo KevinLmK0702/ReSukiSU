@@ -711,7 +711,7 @@ static bool add_type(struct policydb *db, const char *type_name, bool attr)
     }
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0) || defined(KSU_COMPAT_HAS_MODERN_POLICYDB)) && \
-    !defined(KSU_COMPAT_IS_MTK_LEGACY_HM2)
+    (!defined(KSU_COMPAT_IS_MTK_LEGACY_HM2) && !defined(KSU_COMPAT_IS_MTK_HM2))
     struct ebitmap *new_type_attr_map_array =
         ksu_kvrealloc(db->type_attr_map_array, value * sizeof(struct ebitmap), (value - 1) * sizeof(struct ebitmap));
 
