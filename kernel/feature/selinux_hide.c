@@ -45,6 +45,10 @@
 #define __maybe_static static
 #endif
 
+#ifndef sym_name
+#define sym_name(p, sym, idx) ((p)->sym_val_to_name[sym][idx])
+#endif
+
 static DEFINE_MUTEX(selinux_hide_mutex);
 __maybe_static bool ksu_selinux_hide_enabled __read_mostly = false;
 // remove static in susfs
