@@ -25,9 +25,25 @@
 * For EMUI 10+ or HarmonyOS2 Based EMUI10+ Devices
 */
 
+/*
+ * For Huawei Mediatek EMUI10+ (MTK platform)
+ * KSU_COMPAT_IS_MTK_LEGACY_HM2 is defined by kernel_compat.mk
+ * when MTK platform has no flex_array (using ebitmap path)
+ */
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0))
-#if defined(KSU_COMPAT_IS_MTK_HM2)
+#if defined(KSU_COMPAT_IS_MTK_LEGACY_HM2)
 #define KSU_COMPAT_IS_MTK_LEGACY_HM2 1
+#endif
+#endif
+
+/*
+ * For Huawei Mediatek platform with flex_array
+ * KSU_COMPAT_IS_MTK_LEGACY is defined by kernel_compat.mk
+ * when MTK platform has flex_array (using flex_array path)
+ */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0))
+#if defined(KSU_COMPAT_IS_MTK_LEGACY)
+#define KSU_COMPAT_IS_MTK_LEGACY 1
 #endif
 #endif
 
