@@ -46,7 +46,13 @@
 #endif
 
 #ifndef sym_name
+#ifdef KSU_COMPAT_IS_MTK_LEGACY
+// MTK with flex_array: sym_val_to_name is flex_array *
+#define sym_name(p, sym, idx) ((char *)flex_array_get_ptr((p)->sym_val_to_name[sym], idx))
+#elif defined(KSU_COMPAT_IS_MTK_LEGACY_HM2)
+// MTK without flex_array: sym_val_to_name is char **
 #define sym_name(p, sym, idx) ((p)->sym_val_to_name[sym][idx])
+#endif
 #endif
 
 static DEFINE_MUTEX(selinux_hide_mutex);
