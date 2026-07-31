@@ -101,9 +101,18 @@ ccflags-y += -DKSU_COMPAT_IS_HISI_HM2
 endif
 
 # For Huawei Mediatek platform
-ifeq ($(CONFIG_MTK_SMI)$(CONFIG_HUAWEI_KERNEL),yy)
-$(info -- $(REPO_NAME): Huawei Mediatek platform detected)
-ccflags-y += -DKSU_COMPAT_IS_MTK_HM2
+# For Huawei Mediatek platform detection
+# Check if MTK platform has flex_array
+ifneq ($(CONFIG_MTK_SMI)$(CONFIG_HUAWEI_KERNEL),yy)
+# It's not Huawei MediaTek kernel
+else
+ifneq ($(shell grep -q "flex_array" $(srctree)/security/selinux/ss/policydb.h 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME): Huawei Mediatek platform detected (no flex_array, using ebitmap path))
+ccflags-y += -DKSU_COMPAT_IS_MTK_LEGACY_HM2
+else
+$(info -- $(REPO_NAME): Huawei Mediatek platform detected (with flex_array, using flex_array path))
+ccflags-y += -DKSU_COMPAT_IS_MTK_LEGACY
+endif
 endif
 
 # policy mutex
